@@ -266,7 +266,7 @@ class LSM9DS0():
 
 
 if __name__ == "__main__":
-	import pyb
+	from machine import I2C
 	
 	## SPI mode:
 	## physical connections (pyb - LSM9DS0):
@@ -284,7 +284,8 @@ if __name__ == "__main__":
 	# physical connections (pyb - LSM9DS0):
 	# SDA(2) - SDA
 	# SCL(2) - SCL
-	i2c = pyb.I2C(2, mode=pyb.I2C.MASTER, baudrate=100000)
+	i2c = machine.I2C(-1, scl=machine.Pin(5), sda=machine.Pin(4))
+	
 	lsm9ds0 = LSM9DS0(i2c=i2c, g_sens=500, a_sens=4, m_sens=12)
 	
 	g_id, xm_id = lsm9ds0.who_am_i()
