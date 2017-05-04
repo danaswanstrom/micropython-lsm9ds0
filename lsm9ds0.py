@@ -152,36 +152,20 @@ class LSM9DS0():
 	
 	def read_reg(self, slave, reg, data=1):
 		n_bytes = data if type(data) == int else len(data)
-		
-		if self.i2c:
-			return self.i2c.mem_read(
-				data = data,
-				addr = self.g_addr if not slave else self.xm_addr,
-				memaddr = reg | 0x80 if n_bytes > 1 else reg,
+		return self.i2c.mem_read(
+			addr = self.g_addr if not slave else self.xm_addr,
+			memaddr = reg | 0x80 if n_bytes > 1 else reg,
+			data = data
 			)
-		elif self.spi:
-			pin = self.g_addr if not slave else self.xm_addr
-			pin.low()
-			if n_bytes > 1:
-				self.spi.send(0xC0 | reg)
-			else:
-				self.spi.send(0x80 | reg)
-			r = self.spi.recv(data)
-			pin.high()
-			return r
-	
+
+
 	def write_reg(self, slave, reg, data=0):
-		if self.i2c:
-			self.i2c.mem_write(
-				data = data,
-				addr = self.g_addr if not slave else self.xm_addr,
-				memaddr = reg,
+		self.i2c.writeto_mem(
+			addr = self.g_addr if not slave else self.xm_addr,
+			memaddr = reg,
+			data = data
 			)
-		elif self.spi:
-			pin = self.g_addr if not slave else self.xm_addr
-			pin.low()
-			self.spi.send(bytes([reg, data]))
-			pin.high()
+
 	
 	def update_reg(self, slave, reg, value, mask):
 		reg_val = self.read_reg(slave, reg)[0]
